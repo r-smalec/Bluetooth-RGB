@@ -14,5 +14,7 @@ void setup() {
 }
 
 void loop() {
-
+  
+  button.checkState();
+  led.changeColor();
 }

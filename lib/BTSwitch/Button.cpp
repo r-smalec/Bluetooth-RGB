@@ -21,18 +21,21 @@ BTSwitch::Button::~Button() {
 }
 
 void BTSwitch::Button::checkState(void) {
-
-    if(digitalRead(BTSWITCH_BUTTON))
+    // check actual button state
+    if(digitalRead(BTSWITCH_BUTTON)) {
+        _deviceStatus->_events[device_events::BUTTON_RELEASED] = event_status::IS_PENDING;
         _currentButtonState = button_state::OFF;
-    else
+    } else {
+        _deviceStatus->_events[device_events::BUTTON_PRESSED] = event_status::IS_PENDING;
         _currentButtonState = button_state::ON;
-    
+    }
+    // rising edge detection
     if(_currentButtonState == button_state::ON && _previousButtonState == button_state::OFF) {
         
         this->risingEdgeDetected();
         _previousButtonState = button_state::ON;
     }
-        
+    // falling edge detection        
     if (_currentButtonState == button_state::OFF && _previousButtonState == button_state::ON) {
         
         this->fallingEdgeDetected();
@@ -41,10 +44,11 @@ void BTSwitch::Button::checkState(void) {
 }
 
 void BTSwitch::Button::risingEdgeDetected(void) {
-
+    _deviceStatus->_events[device_events::BUTTON_RISING_EDGE] = event_status::IS_PENDING;
 }
 
 void BTSwitch::Button::fallingEdgeDetected(void) {
+    _deviceStatus->_events[device_events::BUTTON_FALLING_EDGE] = event_status::IS_PENDING;
 
     _isPressed = false;
     _releaseButtonTime = millis();
@@ -57,15 +61,15 @@ void BTSwitch::Button::fallingEdgeDetected(void) {
         buttonPushedTime = 0xFFFFFFFF - _pressButtonTime + _releaseButtonTime;
 
     if(buttonPushedTime < LONG_BUTTON_PUSH_MS)
-        BTSwitch::Button::shortButtonPush();
+        BTSwitch::Button::shortPush();
     else
-        BTSwitch::Button::longButtonPush();
+        BTSwitch::Button::longPush();
 }
 
-void BTSwitch::Button::shortButtonPush(void) {
-    
+void BTSwitch::Button::shortPush(void) {
+    _deviceStatus->_events[device_events::BUTTON_SHORT_PUSH] = event_status::IS_PENDING;
 }
 
-void BTSwitch::Button::longButtonPush(void) {
-                      
+void BTSwitch::Button::longPush(void) {
+    _deviceStatus->_events[device_events::BUTTON_LONG_PUSH] = event_status::IS_PENDING;
 }

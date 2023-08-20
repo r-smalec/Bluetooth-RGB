@@ -7,11 +7,24 @@
 
 BTSwitch::Led::Led(BTSwitch::DeviceStatus* deviceStatus) {
     
+    _deviceStatus = new BTSwitch::DeviceStatus();
+    _deviceStatus = deviceStatus;
     BTSwitch::Led::setColor(color::BLACK, FULL_BRIGHTNESS);
 }
 
 BTSwitch::Led::~Led() {
     delete _deviceStatus;
+}
+
+void BTSwitch::Led::changeColor() {
+    if(_deviceStatus->_events[device_events::BUTTON_RELEASED] == event_status::IS_PENDING) {
+        _deviceStatus->_events[device_events::BUTTON_RELEASED] = event_status::DONE;
+        setColor(color::ORANGE, FULL_BRIGHTNESS);
+
+    } else if(_deviceStatus->_events[device_events::BUTTON_PRESSED] == event_status::IS_PENDING) {
+        _deviceStatus->_events[device_events::BUTTON_PRESSED] = event_status::DONE;
+        setColor(color::LIGHTBLUE, FULL_BRIGHTNESS);
+    }
 }
 
 void BTSwitch::Led::setColorRGB(uint8_t R, uint8_t G, uint8_t B) {

@@ -53,6 +53,22 @@ enum button_state {
     OFF 
 };
 
+enum device_events {
+    BUTTON_PRESSED,
+    BUTTON_RELEASED,
+    BUTTON_RISING_EDGE,
+    BUTTON_FALLING_EDGE,
+    BUTTON_SHORT_PUSH,
+    BUTTON_LONG_PUSH,
+    EVENTS_NO
+};
+
+enum event_status {
+    IS_PENDING,
+    IN_PROGRESS,
+    DONE
+};
+
 namespace BTSwitch {
 
     esp_reset_reason_t printResetReason(void);
@@ -63,6 +79,7 @@ namespace BTSwitch {
         public:
             DeviceStatus();
             ~DeviceStatus() {};
+            event_status _events[device_events::EVENTS_NO];
         private:
     };
 
@@ -71,15 +88,15 @@ namespace BTSwitch {
             Button(BTSwitch::DeviceStatus* deviceStatus);
             ~Button();
             void checkState(void);
-            void risingEdgeDetected(void);
-            void fallingEdgeDetected(void);
-            void shortButtonPush(void);
-            void longButtonPush(void);
-            bool _isPressed;
-            uint32_t _howLongIsPressed;
 
         private:
+            void risingEdgeDetected(void);
+            void fallingEdgeDetected(void);
+            void shortPush(void);
+            void longPush(void);
             BTSwitch::DeviceStatus* _deviceStatus;
+            bool _isPressed;
+            uint32_t _howLongIsPressed;
             enum button_state _previousButtonState;
             enum button_state _currentButtonState;
             uint32_t _pressButtonTime;
@@ -90,10 +107,11 @@ namespace BTSwitch {
         public:
             Led(BTSwitch::DeviceStatus* deviceStatus);
             ~Led();
-            struct color_RGB setColor(enum color ledColor, uint8_t brightnessPercent);
+            void changeColor(void);
 
         private:
             BTSwitch::DeviceStatus* _deviceStatus;
+            struct color_RGB setColor(enum color ledColor, uint8_t brightnessPercent);
             void setColorRGB(uint8_t R, uint8_t G, uint8_t B);
             uint8_t colorTransform(uint8_t colorParameter, float brightness);
             uint8_t _rLedPin;
@@ -127,7 +145,7 @@ namespace BTSwitch {
         public:
             Output(BTSwitch::DeviceStatus* deviceStatus);
             ~Output();
-            void changeColor();
+            void changeOutput(void);
         private:
             BTSwitch::DeviceStatus* _deviceStatus;
     };

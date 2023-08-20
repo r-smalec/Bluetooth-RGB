@@ -59,64 +59,77 @@ namespace BTSwitch {
     esp_sleep_wakeup_cause_t printWakeupReason(void);
     void initGPIO(void);
 
+    class DeviceStatus {
+        public:
+            DeviceStatus();
+            ~DeviceStatus() {};
+        private:
+    };
+
     class Button {
         public:
-            Button();
-            ~Button() {};
+            Button(BTSwitch::DeviceStatus* deviceStatus);
+            ~Button();
             void checkState(void);
             void risingEdgeDetected(void);
             void fallingEdgeDetected(void);
             void shortButtonPush(void);
             void longButtonPush(void);
-            bool isPressed;
-            uint32_t howLongIsPressed;
+            bool _isPressed;
+            uint32_t _howLongIsPressed;
 
         private:
-            enum button_state previousButtonState;
-            enum button_state currentButtonState;
-            uint32_t pressButtonTime;
-            uint32_t releaseButtonTime;
+            BTSwitch::DeviceStatus* _deviceStatus;
+            enum button_state _previousButtonState;
+            enum button_state _currentButtonState;
+            uint32_t _pressButtonTime;
+            uint32_t _releaseButtonTime;
     };
 
     class Led {
         public:
-            Led();
-            ~Led() {};
+            Led(BTSwitch::DeviceStatus* deviceStatus);
+            ~Led();
             struct color_RGB setColor(enum color ledColor, uint8_t brightnessPercent);
 
         private:
+            BTSwitch::DeviceStatus* _deviceStatus;
             void setColorRGB(uint8_t R, uint8_t G, uint8_t B);
             uint8_t colorTransform(uint8_t colorParameter, float brightness);
-            uint8_t rLedPin;
-            uint8_t gLedPin;
-            uint8_t bLedPin;
-            struct color_RGB colorRGB;
+            uint8_t _rLedPin;
+            uint8_t _gLedPin;
+            uint8_t _bLedPin;
+            struct color_RGB _colorRGB;
     };
 
-    class Battery {
-        public:
-            Battery();
-            ~Battery() {};
-            uint16_t getVoltageMeasure(void);
-            uint16_t getRawAnalogRead(void);
-            bool isDischarged(void);
-            bool isDeeplyDischarged(void);
-            bool isCharged(void);
-        private:
-            uint8_t batteryPin;
-            uint8_t chargerStatusPin;
-            uint8_t usbStatusPin;
-            uint16_t rawAnalogRead;
-            uint16_t battVoltage;
-            bool isBattCharged;
-            bool isBattDischarged;
-            bool isBattDeeplyDischarged;
-    };
+    // class Battery {
+    //     public:
+    //         Battery(BTSwitch::DeviceStatus* deviceStatus);
+    //         ~Battery();
+    //         uint16_t getVoltageMeasure(void);
+    //         uint16_t getRawAnalogRead(void);
+    //         bool isDischarged(void);
+    //         bool isDeeplyDischarged(void);
+    //         bool isCharged(void);
+    //     private:
+    //         BTSwitch::DeviceStatus* _deviceStatus;
+    //         uint8_t _batteryPin;
+    //         uint8_t _chargerStatusPin;
+    //         uint8_t _usbStatusPin;
+    //         uint16_t _rawAnalogRead;
+    //         uint16_t _battVoltage;
+    //         bool _isBattCharged;
+    //         bool _isBattDischarged;
+    //         bool _isBattDeeplyDischarged;
+    // };
 
     class Output {
         public:
-
+            Output(BTSwitch::DeviceStatus* deviceStatus);
+            ~Output();
+            void changeColor();
         private:
+            BTSwitch::DeviceStatus* _deviceStatus;
     };
 
 };

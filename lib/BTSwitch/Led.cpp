@@ -1,20 +1,24 @@
 #include "BTSwitch.h"
-// #include "analogWrite.h"
+#include "analogWrite.h"
 
 #define FULL_BRIGHTNESS 20 //procent jasności w trybie pełnej jasności diody RGB
 #define PART_BRIGHTNESS 5 //procent jasności w trybie częściowej jasności diody RGB
 #define NO_COLOR 255
 
-BTSwitch::Led::Led() {
+BTSwitch::Led::Led(BTSwitch::DeviceStatus* deviceStatus) {
     
     BTSwitch::Led::setColor(color::BLACK, FULL_BRIGHTNESS);
 }
 
+BTSwitch::Led::~Led() {
+    delete _deviceStatus;
+}
+
 void BTSwitch::Led::setColorRGB(uint8_t R, uint8_t G, uint8_t B) {
     
-    this->colorRGB.red =    R;
-    this->colorRGB.green =  G;
-    this->colorRGB.blue =   B;
+    _colorRGB.red =    R;
+    _colorRGB.green =  G;
+    _colorRGB.blue =   B;
 }
 
 uint8_t BTSwitch::Led::colorTransform(uint8_t colorParameter, float brightness) {
@@ -88,9 +92,9 @@ struct color_RGB BTSwitch::Led::setColor(enum color ledColor, uint8_t brightness
             break;
     }
 
-    // analogWrite(this->rLedPin, this->colorRGB.red);
-    // analogWrite(this->gLedPin, this->colorRGB.green);
-    // analogWrite(this->bLedPin, this->colorRGB.blue);
+    analogWrite(_rLedPin, _colorRGB.red);
+    analogWrite(_gLedPin, _colorRGB.green);
+    analogWrite(_bLedPin, _colorRGB.blue);
     
-    return this->colorRGB;
+    return _colorRGB;
 }

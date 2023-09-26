@@ -1,3 +1,9 @@
+/*
+* BTSwitch is a top level class for all devices and services on BTSwitch board,
+* which are all communicated with eachother via DeviceStatus class which storages
+* statuses for all tasks so as they are accessible for others tasks.
+*/
+
 #ifndef BTSWITCH_H
 #define BTSWITCH_H
 

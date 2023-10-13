@@ -15,6 +15,8 @@ void BTSwitch::initGPIO() {
   pinMode(BTSWITCH_BATT_STAT,     INPUT_PULLUP);
   pinMode(BTSWITCH_BATT_U,        INPUT);
 
+  Serial.begin(9600);
+
   // pinMode(BTSWITCH_IO_0, );
   // pinMode(BTSWITCH_IO_1, );
   // pinMode(BTSWITCH_IO_2, );
@@ -22,6 +24,8 @@ void BTSwitch::initGPIO() {
   // pinMode(BTSWITCH_IO_4, );
   // pinMode(BTSWITCH_IO_5, );
   // pinMode(BTSWITCH_IO_6, );
+
+  digitalWrite(BTSWITCH_OUTPUT_POWER, HIGH);
 }
 
 esp_reset_reason_t BTSwitch::printResetReason(void){

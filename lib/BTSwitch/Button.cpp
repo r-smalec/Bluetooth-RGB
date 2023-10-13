@@ -5,6 +5,8 @@ BTSwitch::Button::Button(BTSwitch::DeviceStatus* deviceStatus) {
     _deviceStatus = new BTSwitch::DeviceStatus();
     _deviceStatus = deviceStatus;
     _isPressed = false;
+    _releaseButtonTime = 0;
+    _pressButtonTime = 0;
 
     if(digitalRead(BTSWITCH_BUTTON)) {
         _currentButtonState = button_state::OFF;
@@ -23,11 +25,12 @@ BTSwitch::Button::~Button() {
 void BTSwitch::Button::checkState(void) {
     // check actual button state
     if(digitalRead(BTSWITCH_BUTTON)) {
-        _deviceStatus->_events[device_events::BUTTON_RELEASED] = event_status::IS_PENDING;
+        _deviceStatus->eventWrite(device_events::BUTTON_RELEASED, event_status::IS_PENDING);
         _currentButtonState = button_state::OFF;
     } else {
-        _deviceStatus->_events[device_events::BUTTON_PRESSED] = event_status::IS_PENDING;
+        _deviceStatus->eventWrite(device_events::BUTTON_PRESSED, event_status::IS_PENDING);
         _currentButtonState = button_state::ON;
+
     }
     // rising edge detection
     if(_currentButtonState == button_state::ON && _previousButtonState == button_state::OFF) {
@@ -44,11 +47,12 @@ void BTSwitch::Button::checkState(void) {
 }
 
 void BTSwitch::Button::risingEdgeDetected(void) {
-    _deviceStatus->_events[device_events::BUTTON_RISING_EDGE] = event_status::IS_PENDING;
+    _pressButtonTime = millis();
+    _deviceStatus->eventWrite(device_events::BUTTON_RISING_EDGE, event_status::IS_PENDING);
 }
 
 void BTSwitch::Button::fallingEdgeDetected(void) {
-    _deviceStatus->_events[device_events::BUTTON_FALLING_EDGE] = event_status::IS_PENDING;
+    _deviceStatus->eventWrite(device_events::BUTTON_FALLING_EDGE, event_status::IS_PENDING);
 
     _isPressed = false;
     _releaseButtonTime = millis();
@@ -67,9 +71,11 @@ void BTSwitch::Button::fallingEdgeDetected(void) {
 }
 
 void BTSwitch::Button::shortPush(void) {
-    _deviceStatus->_events[device_events::BUTTON_SHORT_PUSH] = event_status::IS_PENDING;
+    Serial.println("Button short push");
+    _deviceStatus->eventWrite(device_events::BUTTON_SHORT_PUSH, event_status::IS_PENDING);
 }
 
 void BTSwitch::Button::longPush(void) {
-    _deviceStatus->_events[device_events::BUTTON_LONG_PUSH] = event_status::IS_PENDING;
+    Serial.println("Button long push");
+    _deviceStatus->eventWrite(device_events::BUTTON_LONG_PUSH, event_status::IS_PENDING);
 }

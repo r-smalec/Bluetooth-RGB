@@ -72,7 +72,8 @@ enum device_events {
 enum event_status {
     IS_PENDING,
     IN_PROGRESS,
-    DONE
+    DONE,
+    UNKNOWN
 };
 
 namespace BTSwitch {
@@ -85,8 +86,11 @@ namespace BTSwitch {
         public:
             DeviceStatus();
             ~DeviceStatus() {};
-            event_status _events[device_events::EVENTS_NO];
+            void init();
+            void eventWrite(device_events event, event_status status);
+            event_status eventRead(device_events event);
         private:
+            event_status _events[device_events::EVENTS_NO];
     };
 
     class Button {
@@ -120,9 +124,6 @@ namespace BTSwitch {
             struct color_RGB setColor(enum color ledColor, uint8_t brightnessPercent);
             void setColorRGB(uint8_t R, uint8_t G, uint8_t B);
             uint8_t colorTransform(uint8_t colorParameter, float brightness);
-            uint8_t _rLedPin;
-            uint8_t _gLedPin;
-            uint8_t _bLedPin;
             struct color_RGB _colorRGB;
     };
 

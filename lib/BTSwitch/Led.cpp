@@ -17,12 +17,12 @@ BTSwitch::Led::~Led() {
 }
 
 void BTSwitch::Led::changeColor() {
-    if(_deviceStatus->_events[device_events::BUTTON_RELEASED] == event_status::IS_PENDING) {
-        _deviceStatus->_events[device_events::BUTTON_RELEASED] = event_status::DONE;
-        setColor(color::ORANGE, FULL_BRIGHTNESS);
+    if(_deviceStatus->eventRead(device_events::BUTTON_RELEASED) == event_status::IS_PENDING) {
+        _deviceStatus->eventWrite(device_events::BUTTON_RELEASED, event_status::DONE);
+        setColor(color::RED, FULL_BRIGHTNESS);
 
-    } else if(_deviceStatus->_events[device_events::BUTTON_PRESSED] == event_status::IS_PENDING) {
-        _deviceStatus->_events[device_events::BUTTON_PRESSED] = event_status::DONE;
+    } else if(_deviceStatus->eventRead(device_events::BUTTON_PRESSED) == event_status::IS_PENDING) {
+        _deviceStatus->eventWrite(device_events::BUTTON_PRESSED, event_status::DONE);
         setColor(color::LIGHTBLUE, FULL_BRIGHTNESS);
     }
 }
@@ -105,9 +105,9 @@ struct color_RGB BTSwitch::Led::setColor(enum color ledColor, uint8_t brightness
             break;
     }
 
-    analogWrite(_rLedPin, _colorRGB.red);
-    analogWrite(_gLedPin, _colorRGB.green);
-    analogWrite(_bLedPin, _colorRGB.blue);
+    analogWrite(BTSWITCH_LED_R, _colorRGB.red);
+    analogWrite(BTSWITCH_LED_G, _colorRGB.green);
+    analogWrite(BTSWITCH_LED_B, _colorRGB.blue);
     
     return _colorRGB;
 }

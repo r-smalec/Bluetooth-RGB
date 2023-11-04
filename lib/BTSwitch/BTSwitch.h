@@ -8,6 +8,7 @@
 #define BTSWITCH_H
 
 #include <Arduino.h>
+#include <Adafruit_NeoPixel.h>
 
 #define BTSWITCH_BUTTON 35
 
@@ -32,6 +33,9 @@
 
 #define LONG_BUTTON_PUSH_MS 500 //czas [ms] naciskania przycisku odczytywany jako "długie naciśnięcie", wykorzystany do kończenia wyszukiwania połączenie oraz kończenia połączenia (mruganie na przemian na biało i na kolor kanału), gdy przycisk zostanie naciśnięty długo 
 
+#define OUTPUT_PIXEL_COUNT 14
+#define OUTPUT_MODE_TOP_LIMIT 4
+#define OUTPUT_MODE_BOT_LIMIT 0
 
 enum color {
     WHITE =       0x00,
@@ -78,8 +82,8 @@ enum event_status {
 
 namespace BTSwitch {
 
-    esp_reset_reason_t printResetReason(void);
-    esp_sleep_wakeup_cause_t printWakeupReason(void);
+    esp_reset_reason_t printResetReason();
+    esp_sleep_wakeup_cause_t printWakeupReason();
     void initGPIO(void);
 
     class DeviceStatus {
@@ -89,7 +93,13 @@ namespace BTSwitch {
             void init();
             void eventWrite(device_events event, event_status status);
             event_status eventRead(device_events event);
+            uint8_t getOutputMode();
+            void setOutputMode(uint8_t mode);
+            bool getButtonLoopActive();
+            void setButtonLoopActive(bool state);
         private:
+            bool _buttonLoopActive;
+            uint8_t _outputMode;
             event_status _events[device_events::EVENTS_NO];
     };
 
@@ -97,13 +107,13 @@ namespace BTSwitch {
         public:
             Button(BTSwitch::DeviceStatus* deviceStatus);
             ~Button();
-            void checkState(void);
+            void checkState();
 
         private:
-            void risingEdgeDetected(void);
-            void fallingEdgeDetected(void);
-            void shortPush(void);
-            void longPush(void);
+            void risingEdgeDetected();
+            void fallingEdgeDetected();
+            void shortPush();
+            void longPush();
             BTSwitch::DeviceStatus* _deviceStatus;
             bool _isPressed;
             uint32_t _howLongIsPressed;
@@ -117,7 +127,7 @@ namespace BTSwitch {
         public:
             Led(BTSwitch::DeviceStatus* deviceStatus);
             ~Led();
-            void changeColor(void);
+            void checkIfChangeColor();
 
         private:
             BTSwitch::DeviceStatus* _deviceStatus;
@@ -152,9 +162,12 @@ namespace BTSwitch {
         public:
             Output(BTSwitch::DeviceStatus* deviceStatus);
             ~Output();
-            void changeOutput(void);
+            void checkIfChangeOutput();
         private:
             BTSwitch::DeviceStatus* _deviceStatus;
+            Adafruit_NeoPixel _strip;
+            void colorWipe(uint32_t color, int wait);
+            void rainbow(int wait);
     };
 
 };

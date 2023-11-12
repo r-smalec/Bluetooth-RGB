@@ -17,14 +17,14 @@ BTSwitch::Led::~Led() {
 }
 
 void BTSwitch::Led::checkIfChangeColor() {
-    if(_deviceStatus->eventRead(device_events::BUTTON_RELEASED) == event_status::IS_PENDING) {
+    if(_deviceStatus->getEvent(device_events::BUTTON_RELEASED) == event_status::IS_PENDING) {
         
-        _deviceStatus->eventWrite(device_events::BUTTON_RELEASED, event_status::DONE);
+        _deviceStatus->setEvent(device_events::BUTTON_RELEASED, event_status::DONE);
         setColor(color::RED, FULL_BRIGHTNESS);
 
-    } else if(_deviceStatus->eventRead(device_events::BUTTON_PRESSED) == event_status::IS_PENDING) {
+    } else if(_deviceStatus->getEvent(device_events::BUTTON_PRESSED) == event_status::IS_PENDING) {
         
-        _deviceStatus->eventWrite(device_events::BUTTON_PRESSED, event_status::DONE);
+        _deviceStatus->setEvent(device_events::BUTTON_PRESSED, event_status::DONE);
         setColor(color::LIGHTBLUE, FULL_BRIGHTNESS);
     }
 }

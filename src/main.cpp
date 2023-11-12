@@ -1,16 +1,14 @@
 #include <BTSwitch.h>
-// #include "esp_pthread.h"
-// #include "esp_task_wdt.h"
 
 RTC_DATA_ATTR uint16_t numberOfBoots = 0;
+
+TaskHandle_t Task1;
+void Task1code(void * pvParameters);
 
 BTSwitch::DeviceStatus deviceStatus;
 BTSwitch::Button button(&deviceStatus);
 BTSwitch::Led led(&deviceStatus);
 BTSwitch::Output output(&deviceStatus);
-
-// pthread_t buttonLoopThread;
-// static void* buttonLoop(void* arg);
 
 void setup() {
   numberOfBoots++;
@@ -22,24 +20,26 @@ void setup() {
   BTSwitch::printResetReason();
   BTSwitch::printWakeupReason();
 
-  // esp_pthread_cfg_t cfg;
-  // cfg = esp_pthread_get_default_config();
-  // cfg.stack_size = 16384;
-  // cfg.inherit_cfg = true;
-  // cfg.prio = 3;
-  // esp_pthread_set_cfg(&cfg);
-  // pthread_create(&buttonLoopThread, NULL, buttonLoop, NULL);
-  //deviceStatus.setButtonLoopActive(true);
+  xTaskCreatePinnedToCore(
+                    Task1code,   /* Task function. */
+                    "Task1",     /* name of task. */
+                    10000,       /* Stack size of task */
+                    NULL,        /* parameter of the task */
+                    1,           /* priority of the task */
+                    &Task1,      /* Task handle to keep track of created task */
+                    0);          /* pin task to core 0 */                  
+  delay(500); 
+}
+
+void Task1code(void * pvParameters) {
+  while(1) {
+    vTaskDelay(10);
+    output.checkIfChangeOutput();
+  }
 }
 
 void loop() {
   button.checkState();
   led.checkIfChangeColor();
-  output.checkIfChangeOutput();
+  vTaskDelay(10);
 }
-
-// static void* buttonLoop(void* arg) {
-//   while(1) {
-//   }
-//   return NULL;
-// }

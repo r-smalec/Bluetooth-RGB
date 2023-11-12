@@ -80,6 +80,15 @@ enum event_status {
     UNKNOWN
 };
 
+enum effect {
+    COLOR_WIPE1,
+    COLOR_WIPE2,
+    COLOR_WIPE3,
+    COLOR_WIPE4,
+    RAINBOW,
+    EFFECT_NO
+};
+
 namespace BTSwitch {
 
     esp_reset_reason_t printResetReason();
@@ -91,15 +100,15 @@ namespace BTSwitch {
             DeviceStatus();
             ~DeviceStatus() {};
             void init();
-            void eventWrite(device_events event, event_status status);
-            event_status eventRead(device_events event);
-            uint8_t getOutputMode();
-            void setOutputMode(uint8_t mode);
-            bool getButtonLoopActive();
-            void setButtonLoopActive(bool state);
+            void setEvent(device_events event, event_status status);
+            event_status getEvent(device_events event);
+            effect getOutputMode();
+            void setOutputMode(effect mode);
+            bool getOutputActive();
+            void setOutputActive(bool state);
         private:
-            bool _buttonLoopActive;
-            uint8_t _outputMode;
+            bool _outputActive;
+            effect _outputMode;
             event_status _events[device_events::EVENTS_NO];
     };
 
@@ -121,6 +130,7 @@ namespace BTSwitch {
             enum button_state _currentButtonState;
             uint32_t _pressButtonTime;
             uint32_t _releaseButtonTime;
+            uint32_t _buttonPushedTime;
     };
 
     class Led {

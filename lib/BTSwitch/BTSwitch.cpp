@@ -2,6 +2,8 @@
 
 void BTSwitch::initGPIO() {
 
+  Serial.begin(9600);
+
   pinMode(BTSWITCH_BUTTON,        INPUT);
 
   pinMode(BTSWITCH_OUTPUT,         OUTPUT);
@@ -14,8 +16,6 @@ void BTSwitch::initGPIO() {
   pinMode(BTSWITCH_USB_STAT,      INPUT);
   pinMode(BTSWITCH_BATT_STAT,     INPUT_PULLUP);
   pinMode(BTSWITCH_BATT_U,        INPUT);
-
-  Serial.begin(9600);
 
   // pinMode(BTSWITCH_IO_0, );
   // pinMode(BTSWITCH_IO_1, );

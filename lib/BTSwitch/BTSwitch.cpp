@@ -26,6 +26,9 @@ void BTSwitch::initGPIO() {
   // pinMode(BTSWITCH_IO_6, );
 
   digitalWrite(BTSWITCH_OUTPUT_POWER, HIGH);
+  digitalWrite(BTSWITCH_LED_R, HIGH);
+  digitalWrite(BTSWITCH_LED_G, HIGH);
+  digitalWrite(BTSWITCH_LED_B, HIGH);
 }
 
 esp_reset_reason_t BTSwitch::printResetReason(void){

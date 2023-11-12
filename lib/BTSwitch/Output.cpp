@@ -34,8 +34,7 @@ void BTSwitch::Output::checkIfChangeOutput() {
                 break;
         }
     } else {
-        _strip.clear();
-        _strip.show();
+        colorWipe(_strip.Color(0,0,0), 50); // switch off
     }
 }
 

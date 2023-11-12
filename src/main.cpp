@@ -1,34 +1,24 @@
 #include <BTSwitch.h>
 
-RTC_DATA_ATTR uint16_t numberOfBoots = 0;
-
 TaskHandle_t Task1;
 void Task1code(void * pvParameters);
 
 BTSwitch::DeviceStatus deviceStatus;
 BTSwitch::Button button(&deviceStatus);
-BTSwitch::Led led(&deviceStatus);
 BTSwitch::Output output(&deviceStatus);
 
 void setup() {
-  numberOfBoots++;
+  esp_sleep_enable_ext0_wakeup(BTSWITCH_BUTTON_GPIO_NUM, LOW);
 
   BTSwitch::initGPIO();
-  deviceStatus.init();
-  Serial.print("\nBoot no: ");
-  Serial.println(numberOfBoots);
-  BTSwitch::printResetReason();
+  esp_reset_reason_t resetReason = BTSwitch::printResetReason();
   BTSwitch::printWakeupReason();
+  deviceStatus.init();
 
-  xTaskCreatePinnedToCore(
-                    Task1code,   /* Task function. */
-                    "Task1",     /* name of task. */
-                    10000,       /* Stack size of task */
-                    NULL,        /* parameter of the task */
-                    1,           /* priority of the task */
-                    &Task1,      /* Task handle to keep track of created task */
-                    0);          /* pin task to core 0 */                  
-  delay(500); 
+  if(resetReason == ESP_RST_DEEPSLEEP)
+    deviceStatus.setOutputActive(1);
+
+  xTaskCreatePinnedToCore(Task1code, "Task1", 10000, NULL, 1, &Task1, 0);
 }
 
 void Task1code(void * pvParameters) {
@@ -39,7 +29,6 @@ void Task1code(void * pvParameters) {
 }
 
 void loop() {
-  button.checkState();
-  led.checkIfChangeColor();
   vTaskDelay(10);
+  button.checkState();
 }

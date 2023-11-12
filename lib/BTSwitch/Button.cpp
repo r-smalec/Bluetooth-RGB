@@ -1,5 +1,7 @@
 #include "BTSwitch.h"
 
+#define DEBUG
+
 BTSwitch::Button::Button(BTSwitch::DeviceStatus* deviceStatus) {
 
     _deviceStatus = new BTSwitch::DeviceStatus();
@@ -10,12 +12,11 @@ BTSwitch::Button::Button(BTSwitch::DeviceStatus* deviceStatus) {
     _pressButtonTime = millis();
 
     if(digitalRead(BTSWITCH_BUTTON)) {
-        _currentButtonState = button_state::OFF;
-        _previousButtonState = button_state::OFF;
-    }
-    else {
         _currentButtonState = button_state::ON;
         _previousButtonState = button_state::ON;
+    } else {
+        _currentButtonState = button_state::OFF;
+        _previousButtonState = button_state::OFF;
     }
 }
 
@@ -35,13 +36,17 @@ void BTSwitch::Button::checkState(void) {
     }
     // rising edge detection
     if(_currentButtonState == button_state::ON && _previousButtonState == button_state::OFF) {
-        
+        #ifdef DEBUG
+            Serial.println("Button rising edge");
+        #endif
         this->risingEdgeDetected();
         _previousButtonState = button_state::ON;
     }
     // falling edge detection        
     if (_currentButtonState == button_state::OFF && _previousButtonState == button_state::ON) {
-        
+        #ifdef DEBUG
+            Serial.println("Button falling edge");
+        #endif
         this->fallingEdgeDetected();
         _previousButtonState = button_state::OFF;
     }
@@ -50,6 +55,10 @@ void BTSwitch::Button::checkState(void) {
 
         _deviceStatus->setEvent(device_events::BUTTON_LONG_PUSH, event_status::DONE);
         _deviceStatus->setOutputActive(!_deviceStatus->getOutputActive());
+        if(!_deviceStatus->getOutputActive()) {
+            delay(100);
+            esp_deep_sleep_start();
+        }
     }
     /////////////// short button push reaction ///////////////
     if(_deviceStatus->getOutputActive()) {
@@ -84,11 +93,15 @@ void BTSwitch::Button::fallingEdgeDetected(void) {
 }
 
 void BTSwitch::Button::shortPush(void) {
-    Serial.println("Button short push");
+    #ifdef DEBUG
+        Serial.println("Button short push");
+    #endif
     _deviceStatus->setEvent(device_events::BUTTON_SHORT_PUSH, event_status::IS_PENDING);
 }
 
 void BTSwitch::Button::longPush(void) {
-    Serial.println("Button long push");
+    #ifdef DEBUG
+        Serial.println("Button long push");
+    #endif
     _deviceStatus->setEvent(device_events::BUTTON_LONG_PUSH, event_status::IS_PENDING);
 }

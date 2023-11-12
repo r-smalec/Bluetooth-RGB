@@ -11,6 +11,7 @@
 #include <Adafruit_NeoPixel.h>
 
 #define BTSWITCH_BUTTON 35
+#define BTSWITCH_BUTTON_GPIO_NUM GPIO_NUM_35
 
 #define BTSWITCH_OUTPUT 21
 #define BTSWITCH_OUTPUT_POWER 19

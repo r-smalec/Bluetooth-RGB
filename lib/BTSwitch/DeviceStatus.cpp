@@ -6,7 +6,7 @@ BTSwitch::DeviceStatus::DeviceStatus() {
 
 void BTSwitch::DeviceStatus::init() {
     _outputMode = effect::COLOR_WIPE1;
-    _outputActive = 1;
+    _outputActive = 0;
     for(int i = 0; i < device_events::EVENTS_NO; i++) {
         _events[i] = event_status::DONE;
     }

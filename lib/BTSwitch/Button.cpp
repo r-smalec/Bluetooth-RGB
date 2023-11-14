@@ -56,7 +56,7 @@ void BTSwitch::Button::checkState(void) {
         _deviceStatus->setEvent(device_events::BUTTON_LONG_PUSH, event_status::DONE);
         _deviceStatus->setOutputActive(!_deviceStatus->getOutputActive());
         if(!_deviceStatus->getOutputActive()) {
-            delay(100);
+            delay(1000); // wait until led stripe clears
             esp_deep_sleep_start();
         }
     }
